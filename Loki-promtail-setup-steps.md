@@ -314,69 +314,69 @@ positions:
   filename: /var/lib/promtail/positions.yaml
 
 clients:
-  - url: "https://loki-custom-monitoring.gha-prod-sre-cluster-us-s-d3463d8f849ebe06c018b03078ea2661-0000.us-south.containers.appdomain.cloud/loki/api/v1/push"
+  - url: "https://loki-custom-monitoring.gha-prod-sre-cluster-us-s-d3463d8f849ebe06c018b03078ea2661-0000.us-south.containers.appdomain.cloud/api/push"
     batchwait: 15s
     batchsize: 1048576
-    timeout: 30s
+    timeout: 60s
     tls_config:
       insecure_skip_verify: true
 
 scrape_configs:
 
-  # ----------------------------
-  # 1️⃣ System logs (journal + systemctl + metrics)
-  # ----------------------------
   - job_name: lxd-app-system
     static_configs:
       - targets: [localhost]
         labels:
           job: "lxd-app-system"
-
           __path__: /var/log/lxd-app/lxd-app-system.log
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: worker
+        replacement: localhost
 
-  # ----------------------------
-  # 2️⃣ Container logs (application logs)
-  # ----------------------------
   - job_name: lxd-app-container
     static_configs:
       - targets: [localhost]
         labels:
           job: "lxd-app-container"
-
           __path__: /var/log/lxd-app/push/*-podman.log
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: worker
+        replacement: localhost
 
-  # ----------------------------
-  # 3️⃣ Container stats logs (CPU, MEM, NET, BLOCK)
-  # ----------------------------
   - job_name: lxd-app-stats
     static_configs:
       - targets: [localhost]
         labels:
           job: "lxd-app-stats"
-
           __path__: /var/log/lxd-app/push/*-podman-stats.log
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: worker
+        replacement: localhost
 
-  # ----------------------------
-  # 4️⃣ LXD console logs (direct read, no copy)
-  # ----------------------------
   - job_name: lxd-console
     static_configs:
       - targets: [localhost]
         labels:
           job: "lxd-console"
-
           __path__: /var/snap/lxd/common/lxd/logs/*/console.log
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: worker
+        replacement: localhost
 
-  # ----------------------------
-  # 5️⃣ Optional: LXD container lifecycle logs
-  # ----------------------------
   - job_name: lxd-lifecycle
     static_configs:
       - targets: [localhost]
         labels:
           job: "lxd-lifecycle"
-
           __path__: /var/snap/lxd/common/lxd/logs/*/lxc.log
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: worker
+        replacement: localhost
 
 -------------------------------------------------------------------------------------------------------
 
@@ -581,7 +581,7 @@ currently working queries:
 
 {job="lxd-app-system"} |= "overlay" | logfmt
 
-
+{job="lxd-app-system"} |= "failed"
 
 
 
