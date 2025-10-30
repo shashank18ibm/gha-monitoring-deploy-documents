@@ -182,9 +182,6 @@ Type=oneshot
 ExecStart=/usr/local/bin/lxd_cmd_logs.sh system
 
 
-
-
-
 -----------------------------------------------------------------
 
 **Step 7:**
@@ -215,7 +212,8 @@ WantedBy=timers.target
 vi /etc/systemd/system/lxd-cmd-container.service
 
 [Unit]
-Description=Collect LXD Container Logs \& Stats (Only on new container)
+Description=Collect LXD Container Logs & Stats (Only on new container)
+
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/lxd_cmd_logs.sh container
@@ -231,13 +229,16 @@ ExecStart=/usr/local/bin/lxd_cmd_logs.sh container
 vi /etc/systemd/system/lxd-cmd-container.timer
 
 
-
 [Unit]
-Description=Collect LXD Container Logs & Stats (Only on new container)
+Description=Run LXD Container Log Collector Every 5 Minutes
 
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/lxd_cmd_logs.sh container
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Unit=lxd-cmd-container.service
+
+[Install]
+WantedBy=timers.target
 
 ----------------------------------------------------------------------------
 
@@ -255,26 +256,7 @@ touch /var/log/lxd-app/lxd-app-system.log
 
 chmod 644 /var/log/lxd-app/lxd-app-system.log
 
-chmod +x lxd-app/
-
-sudo chmod +x /usr/local/bin/lxd_cmd_logs.sh
-
-sudo systemctl daemon-reload
-
-sudo systemctl enable --now lxd-cmd-system.timer
-
-sudo systemctl enable --now lxd-cmd-container.timer
-
-systemctl daemon-reload
-
-systemctl start  lxd-cmd-system.timer
-
-systemctl start  lxd-cmd-container.timer
-
-systemctl start lxd-cmd-system.service
-
-systemctl start lxd-cmd-container.service
-
+chmod +x /var/log/lxd-app/
 
 
 
@@ -383,25 +365,6 @@ scrape_configs:
 #########################################################################################################################################################################################################################################################################################################################################################################################################################################
 
 
-Step:12 ------:
-
-**Then run below:**
-
-
-
-mkdir -p /var/lib/promtail
-
-chmod 755 /var/lib/promtail
-sudo systemctl daemon-reload
-
-sudo systemctl enable --now promtail
-
-sudo systemctl status promtail
-
- 
-
-###################################################################################################################################################################################################################################################
-
 ==========================================================================================================================================
 
 \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
@@ -409,7 +372,7 @@ sudo systemctl status promtail
 ------------------------------------------------------------------------------------
 
 
-**Step 12:**
+**Step 11:**
 
 vi /usr/local/bin/lxd_cmd_logs.sh
 
@@ -517,7 +480,32 @@ esac
 
 ##############################################################################################################################################################################################################################################################
 
-                        
+Step:12 ------:
+
+**Then run below:**
+
+
+sudo chmod +x /usr/local/bin/lxd_cmd_logs.sh
+mkdir -p /var/lib/promtail
+
+chmod 755 /var/lib/promtail
+sudo systemctl enable --now promtail
+
+sudo systemctl enable --now lxd-cmd-system.timer
+
+sudo systemctl enable --now lxd-cmd-container.timer
+
+systemctl start  lxd-cmd-system.timer
+
+systemctl start  lxd-cmd-container.timer
+
+systemctl start lxd-cmd-system.service
+
+systemctl start lxd-cmd-container.service
+sudo systemctl daemon-reload
+sudo systemctl status promtail
+
+###################################################################################################################################################################################################################################################                        
 
 
 
