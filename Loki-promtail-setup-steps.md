@@ -116,8 +116,8 @@ cd /opt \&\& sudo mkdir -p src \&\& sudo chown "$(id -u)":"$(id -g)" src
 cd /opt/src
 git clone https://github.com/grafana/loki.git
 cd loki
-LOKI\_TAG=$(git describe --tags --abbrev=0 || true); echo "Using tag: ${LOKI\_TAG}"
-if \[ -n "$LOKI\_TAG" ]; then git checkout "$LOKI\_TAG"; fi
+LOKI_TAG=$(git describe --tags --abbrev=0 || true); echo "Using tag: ${LOKI_TAG}"
+if [ -n "$LOKI_TAG" ]; then git checkout "$LOKI_TAG"; fi
 
 export LOKI_TAG="helm-loki-6.44.0"
 
@@ -146,13 +146,13 @@ sudo mkdir -p /etc/promtail
 ----------------------------------------
 
 sudo tee /etc/systemd/system/promtail.service > /dev/null <<EOF
-\[Unit]
+[Unit]
 Description=Promtail Service
 After=network.target
-\[Service]
+[Service]
 ExecStart=/usr/local/bin/promtail --config.file=/etc/promtail/promtail.yaml
 Restart=always
-\[Install]
+[Install]
 WantedBy=multi-user.target
 EOF
 
@@ -214,11 +214,11 @@ WantedBy=timers.target
 
 vi /etc/systemd/system/lxd-cmd-container.service
 
-\[Unit]
+[Unit]
 Description=Collect LXD Container Logs \& Stats (Only on new container)
-\[Service]
+[Service]
 Type=oneshot
-ExecStart=/usr/local/bin/lxd\_cmd\_logs.sh container
+ExecStart=/usr/local/bin/lxd_cmd_logs.sh container
 
 -------------------------------------------------------------------------
 
@@ -257,7 +257,7 @@ chmod 644 /var/log/lxd-app/lxd-app-system.log
 
 chmod +x lxd-app/
 
-sudo chmod +x /usr/local/bin/lxd\_cmd\_logs.sh
+sudo chmod +x /usr/local/bin/lxd_cmd_logs.sh
 
 sudo systemctl daemon-reload
 
@@ -295,7 +295,7 @@ lxd-cmd-container.timer    lxd-cmd-container.service  ... 5m
 
 \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-\############################################################################################################################
+############################################################################################################################
 
 
 
@@ -603,7 +603,7 @@ Some Important commands:
 
 commands:
 
- du -sh /var/log/lxd-app/\*    ---> to check which file has occupied how much storage
+ du -sh /var/log/lxd-app/*    ---> to check which file has occupied how much storage
 
  sudo systemctl restart promtail
 
@@ -621,7 +621,7 @@ sudo systemctl enable --now lxd-cmd-logs.timer
 
  systemctl list-timers | grep lxd-cmd-logs
 
-  ls -lh /tmp/cmd\_logs/
+  ls -lh /tmp/cmd_logs/
 
 ---
 
@@ -631,11 +631,11 @@ sudo systemctl enable --now lxd-cmd-logs.timer
 
 /etc/promtail/promtail.yaml
 
-/usr/local/bin/lxd\_cmd\_logs.sh
+/usr/local/bin/lxd_cmd_logs.sh
 
 
 
 /var/lib/promtail/positions.yaml
 
- /etc/systemd/system/lxd-cmd-logs.service  and lxd-cmd-logs.timer  --> used to run /usr/local/bin/lxd\_cmd\_logs.sh  and collect logs every 5 min and store it     in /var/log/lxd-app/lxd-app-monitor.log  and other logs file
+ /etc/systemd/system/lxd-cmd-logs.service  and lxd-cmd-logs.timer  --> used to run /usr/local/bin/lxd_cmd_logs.sh  and collect logs every 5 min and store it     in /var/log/lxd-app/lxd-app-monitor.log  and other logs file
 
